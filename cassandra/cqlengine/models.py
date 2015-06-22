@@ -869,6 +869,7 @@ class ModelMetaClass(type):
 
         # some validation
         col_names = set()
+        column_dict_by_db_field = OrderedDict()
         for v in column_dict.values():
             # check for duplicate column names
             if v.db_field_name in col_names:
@@ -878,6 +879,7 @@ class ModelMetaClass(type):
             if v.clustering_order and v.clustering_order.lower() not in ('asc', 'desc'):
                 raise ModelException("invalid clustering order {} for column {}".format(repr(v.clustering_order), v.db_field_name))
             col_names.add(v.db_field_name)
+            column_dict_by_db_field[v.db_field_name] = v
 
         # create db_name -> model name map for loading
         db_map = {}
@@ -888,6 +890,7 @@ class ModelMetaClass(type):
         attrs['_columns'] = column_dict
         attrs['_primary_keys'] = primary_keys
         attrs['_defined_columns'] = defined_columns
+        attrs['_column_dict_by_db_field'] = column_dict_by_db_field
 
         # maps the database field to the models key
         attrs['_db_map'] = db_map
